@@ -4,8 +4,7 @@
 (defn strToInt
   "Parses a string into an integer"
   [val]
-  (Integer/parseInt val)
-)
+  (Integer/parseInt val))
 
 (defn getSynth
   "Gets a synth player"
@@ -17,14 +16,9 @@
         (println (str "Instrument is a " (.getName instrument)))
         (.loadInstrument synth instrument)
         (.programChange channel instrumentNum)
-        channel
-      )
-    )
-  )
-)
+        channel))))
 
 (defn -main
   "Get a synthesizer object"
   [channelNum instrumentNum]
-  (getSynth (strToInt channelNum) (strToInt instrumentNum))
-)
+  (getSynth (strToInt channelNum) (strToInt instrumentNum)))

@@ -1,36 +1,3 @@
-# apollo
+# Apollo
 
-FIXME: description
-
-## Installation
-
-Download from http://example.com/FIXME.
-
-## Usage
-
-FIXME: explanation
-
-    $ java -jar apollo-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2020 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+Apollo is a music programming language written in Clojure. This is my first project in Clojure and really is a means to learn more about the language and actually develop something useful. The idea is not my own and is inspired by [Alda](https://github.com/alda-lang/alda).
