@@ -6,7 +6,17 @@
   [val]
   (Integer/parseInt val))
 
-(defn getSynth
+(defn play-note
+  "Plays a note"
+  [channel note]
+  (println "Playing a note")
+  (do 
+    (.noteOn channel note 100)
+    (Thread/sleep 1000)
+    (.noteOff channel note)
+  )
+)
+(defn get-synth
   "Gets a synth player"
   [channelNum instrumentNum]
   (with-open [synth (doto (MidiSystem/getSynthesizer) .open)]
@@ -21,4 +31,5 @@
 (defn -main
   "Get a synthesizer object"
   [channelNum instrumentNum]
-  (getSynth (strToInt channelNum) (strToInt instrumentNum)))
+  (let [synth (get-synth (strToInt channelNum) (strToInt instrumentNum))]
+    (play-note synth 60)))
