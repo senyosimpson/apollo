@@ -1,38 +1,20 @@
 (ns apollo.core
-  (:import [javax.sound.midi MidiSystem]))
+  (:require [clojure.tools.cli :refer [parse-opts]]
+            [apollo.audio :refer [get-synth]]))
 
 (defn strToInt
   "Parses a string into an integer"
   [val]
   (Integer/parseInt val))
 
-(defn play-note
-  "Plays a note"
-  [channel note]
-  (println "Playing a note")
-  (do 
-    (.noteOn channel note 100)
-    (Thread/sleep 1000)
-    (.noteOff channel note)))
-
-(defn get-synth
-  "Gets a synth player"
-  [channelNum instrumentNum]
-  (let [synth (doto (MidiSystem/getSynthesizer) .open)]
-    (do
-      (let [channel (aget (.getChannels synth) channelNum)
-            instrument (aget (.getAvailableInstruments synth) instrumentNum)]
-        (println (str "Instrument is a " (.getName instrument)))
-        (.loadInstrument synth instrument)
-        (.programChange channel instrumentNum)
-        (fn [volume note duration]
-          (do
-            (.noteOn channel note volume)
-            (Thread/sleep duration)
-            (.noteOff channel note)))))))
-
-(defn -main
-  "Get a synthesizer object"
-  [channelNum instrumentNum]
-  (let [synth (get-synth (strToInt channelNum) (strToInt instrumentNum))]
-    (synth 60 60 250)))
+(def cli-options
+  [[nil "--channel" "The channel number"
+    :default 0
+    :parse-fn strToInt]
+  [nil "--instrument" "The number of the instrument to play"
+   :default 0
+   :parse-fn strToInt]])
+  
+(defn -main [& args]
+  (let [{:keys [channel instrument]} (:options (parse-opts args cli-options))]
+    ((get-synth channel instrument) 60 60 250)))
