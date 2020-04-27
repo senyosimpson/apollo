@@ -1,9 +1,8 @@
 (ns apollo.audio
   (:import [javax.sound.midi MidiSystem]))
 
-(defn get-synth
+(defn get-synth [channelNum instrumentNum]
   "Gets a synth player"
-  [channelNum instrumentNum]
   (let [synth (doto (MidiSystem/getSynthesizer) .open)]
     (do
       (let [channel (aget (.getChannels synth) channelNum)
@@ -16,3 +15,7 @@
             (.noteOn channel note volume)
             (Thread/sleep duration)
             (.noteOff channel note)))))))
+
+(defn play-notes [player notes]
+  (doseq [{:keys [volume note duration]} (map #(hash-map :volume 60 :note % :duration 400) notes)]
+    (player volume note duration)))
