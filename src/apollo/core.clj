@@ -1,6 +1,6 @@
 (ns apollo.core
   (:require [clojure.tools.cli :refer [parse-opts]]
-            [apollo.audio :refer [get-synth play-notes]]
+            [apollo.audio :refer [get-synth play-notes play]]
             [apollo.io :refer [read-piano-roll]]))
 
 (defn strToInt [val]
@@ -19,7 +19,10 @@
   [nil "--roll" "The notes to play"
    :required "Path to piano roll"]])
   
-(defn -main [& args]
-  (let [{:keys [channel instrument roll]} (:options (parse-opts args cli-options))]
-    (let [notes (read-piano-roll roll)]
-      (play-notes (get-synth channel instrument) (concat notes (reverse notes))))))
+; (defn -main [& args]
+;   (let [{:keys [channel instrument roll]} (:options (parse-opts args cli-options))]
+;     (let [notes (read-piano-roll roll)]
+;       (play-notes (get-synth channel instrument) (concat notes (reverse notes))))))
+
+(defn -main []
+  (play [0 60] "midifiles/c-major.mid"))
