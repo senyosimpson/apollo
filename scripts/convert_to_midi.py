@@ -15,8 +15,14 @@ if __name__ == "__main__":
                         type=str,
                         required=True,
                         help='The file to convert into midi')
+    parser.add_argument('--num-tracks',
+                        type=int,
+                        required=False,
+                        default=2,
+                        help='The number of tracks to use')
     args = parser.parse_args()
     filename = args.filename
+    num_tracks = args.num_tracks
     
     with open(filename, mode='r') as f:
         notes = f.read().split()
@@ -26,7 +32,8 @@ if __name__ == "__main__":
         velocities = [60 for _ in range(len(notes))]
     
     midi = MidiFile(type=1)
-    for channel in range(2):
+    for i in range(num_tracks):
+        channel = i
         track = MidiTrack()
         track = populate_track(track, channel, notes, velocities)
         midi.tracks.append(track)
