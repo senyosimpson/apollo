@@ -14,9 +14,9 @@
          instruments (str/split (slurp "instruments.txt") #"\n")]
   (if (empty? instruments)
     mapping
-    (recur (into mapping (hash-map (keyword (sanitize (get instruments 0))) iteration))
+    (recur (into mapping (hash-map (keyword (sanitize (first instruments))) iteration))
            (inc iteration)
-           (vec (rest instruments))))))
+           (rest instruments)))))
 
 (defn get-instrument-numbers [instruments instrument-names]
   (vec (map #((keyword %) instruments) instrument-names)))
