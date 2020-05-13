@@ -1,4 +1,5 @@
-(ns apollo.midi)
+(ns apollo.midi
+  (:import (javax.sound.midi ShortMessage MidiEvent)))
 
 (defn note-offsets [notes] 
   (loop [mapping {}
@@ -20,3 +21,25 @@
     (+ 24 (* 12 (- octave 1))))
   ([]
     (get-octave-base-note 4)))
+
+(defn create-midi-event [message tick]
+  (new MidiEvent message tick))
+
+(defn create-note-on-event [note volume tick]
+  "Creates a midi note on message"
+  (create-midi-event 
+    (doto (new ShortMessage) (.setMessage (ShortMessage/NOTE_ON 0 note volume)))
+    tick))
+
+(defn create-note-off-event [note volume tick]
+  "Creates a midi note off message"
+  (create-midi-event
+    (doto (new ShortMessage) (.setMessage (ShortMessage/NOTE_OFF 0 note volume)))
+    tick))
+
+
+(defn add-track-events [track note volume tick]
+  (do
+    (doto track (.add (create-note-on-event note volume tick)))
+    (doto track (.add (create-note-off-event note volume tick)))
+    track)) ; add some logic for the ticks

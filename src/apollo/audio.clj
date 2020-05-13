@@ -1,5 +1,5 @@
 (ns apollo.audio
-  (:import [javax.sound.midi MidiSystem])
+  (:import (javax.sound.midi MidiSystem))
   (:require [clojure.java.io :as io]))
 
 (defn set-instrument-channel [synth instrument-num channel-num]
