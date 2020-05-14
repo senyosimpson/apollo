@@ -40,9 +40,8 @@
 
 (defn add-track-events [track note volume tick]
   (do
-    (doto track (.add (create-note-on-event note volume tick)))
-    (doto track (.add (create-note-off-event note volume (+ 250 tick)))))
-    track)
+    (.add track (create-note-on-event note volume tick))
+    (.add track (create-note-off-event note volume (+ 2 tick)))))
 
 (defn set-instrument-channel [synth instrument-num channel-num]
   "Sets a channel to the specified instrument"
@@ -56,7 +55,7 @@
   (let [sequence (new Sequence Sequence/PPQ 1)]
     (let [track (.createTrack sequence)]
       (doseq [[note tick]
-              (map list notes (for [tick (range (count notes))] (* 250 tick)))]
+              (map list notes (for [tick (range (count notes))] (* 2 tick)))]
         (add-track-events track note 60 tick))
     (doto sequencer (.setSequence sequence)))
     sequencer))
