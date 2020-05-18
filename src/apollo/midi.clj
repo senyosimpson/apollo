@@ -2,7 +2,9 @@
   (:import (javax.sound.midi ShortMessage MidiEvent MidiSystem Sequence))
   (:require [clojure.java.io :as io]))
 
-(defn note-offsets [notes] 
+(defn note-offsets [notes]
+  "Gets the offsets of a note from a base note. i.e D has an offset of 2 relative to C.
+  Returns a mapping from note to offset e.g {C 0, C# 1, D 2, D# 3}"
   (loop [mapping {}
          iteration 0
          notes notes]
@@ -66,9 +68,9 @@
     (doseq [[instrument-num channel-num]
             (map list instrument-nums (range (count instrument-nums)))]
       (set-instrument-channel synth instrument-num channel-num))
-    (let [sequencerTransmitter (.getTransmitter sequencer)
-          synthesizerReceiver (.getReceiver synth)]
-      (.setReceiver sequencerTransmitter synthesizerReceiver))
+    (let [seq-transmitter (.getTransmitter sequencer)
+          synth-receiver (.getReceiver synth)]
+      (.setReceiver seq-transmitter synth-receiver))
     sequencer))
 
 (defn play [instrument-nums notes]
