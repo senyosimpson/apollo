@@ -7,10 +7,6 @@
                                    get-instrument-name
                                    convert-score-to-midi]]))
 
-(def cli-options
-  [[nil "--roll" "The notes to play"
-   :required "Path to piano roll"]])
-
 (defn get-instrument-list []
   (loop [mapping {}
          iteration 0
@@ -26,9 +22,14 @@
   lookup in order to find the relevant map from name to number"
   (vec (map #(get instruments %) instrument-names)))
 
-(defn -main []
-  (let [[meta score] (split-meta-score "rolls/c-major.apl")
-        instruments (get-instrument-list)]
-    (play
-      (get-instrument-numbers instruments (vector (sanitize (get-instrument-name meta))))
-      (convert-score-to-midi meta score))))
+(def cli-options
+  [[nil "--roll" "The notes to play"
+   :required "Path to piano roll"]])
+
+(defn -main [& args]
+  (let [roll (:roll (:options (parse-opts args cli-options)))]
+    (let [[meta score] (split-meta-score roll)
+          instruments (get-instrument-list)]
+      (play
+        (get-instrument-numbers instruments (vector (sanitize (get-instrument-name meta))))
+        (convert-score-to-midi meta score)))))
