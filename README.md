@@ -2,4 +2,4 @@
 
 Apollo is a music programming language written in Clojure. This is my first project in Clojure and really is a means to learn more about the language and actually develop something useful. The idea is not my own and is inspired by [Alda](https://github.com/alda-lang/alda).
 
-I have added a diary that tracks the development and considerations of this project and in the file `development.md`.
+I have added a diary that tracks the development and considerations of this project in the file `development.md`.
