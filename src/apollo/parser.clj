@@ -79,9 +79,9 @@
   (+ (get-octave-base-note octave) (get note-offsets-map note)))
 
 
-(defn get-note-data [notes octave]
+(defn to-apl-notes [notes octave channel]
   "
-  Creates a vector of notes with their corresponding data. This is the core structure
+  Converts notes to the apollo note representation. This is the core structure
   that defines the data needed for a note to be played by the sound engine. It is a 
   hash map with the data:
     {
@@ -96,27 +96,27 @@
     notes - a list of notes
     octave - the octave the notes are in (i.e 4)
   "
-  (loop [note-data []
+  (loop [apl-notes []
          notes notes]
     (if (empty? notes)
-      note-data
-      (recur (conj note-data {:note (first notes)
+      apl-notes
+      (recur (conj apl-notes {:note (first notes)
                               :midi-note (to-midi (first notes) octave)
                               :volume 60
-                              :channel 0
+                              :channel channel
                               :duration 2})
              (rest notes)))))
 
 
-(defn build-score-repr [score]
+(defn to-apl-score [score channel]
   "
-  Builds the internal representation of a score. This is the main structure used
+  Builds the internal apollo representation of a score. This is the main structure used
   by the audio engine. This is a hash map with the data:
     {
       :instrument acoustic grand piano
-      :instrument-no 0
+      :instrument-number 0
       :octave 4
-      :notes (note-repr)
+      :notes <apl-notes>
     }
 
   Arguments:
@@ -129,13 +129,17 @@
     {:instrument instrument
      :instrument-number (get-instrument-number instrument)
      :octave octave
-     :notes (get-note-data notes octave)}))
+     :notes (to-apl-notes notes octave channel)}))
 
-(defn score-repr-from-file [apl]
+
+(defn apl-score-from-file [file]
   "
-  Reads a file and builds the internal representation of a score.
+  Reads a file and builds the internal apollo representation of a score.
 
   Arguments:
-    apl - the file path to the .apl file
+    file - the file path to the .apl file
   "
-  (for [score (str/split (slurp apl) #"\n\n")] (build-score-repr score)))
+  (let [scores (str/split (slurp file) #"\n\n")
+        channels (range (count scores))]
+    (for [[score channel] (partition 2 (interleave scores channels))]
+      (to-apl-score score channel))))
