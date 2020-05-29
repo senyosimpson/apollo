@@ -61,3 +61,7 @@ At the moment I can parse multiple instruments and build an intermediate represe
 The next step is to be able to build the midi track and then play it. This will require taking the above representation and creating a sequence with the respective notes in each channel. 
 
 Outside of that, I'd like to make program changes part of the midi sequence. Finally, I'd like to start writing some tests whenever I figure out how you do that in Clojure.
+
+### Success - 30/05/2020
+
+Managed to get it working! Internal representation works nicely and I got the program change to occur at the start of the midi sequence. I still need to remove the hardcoded values but I'll worry about that later.
