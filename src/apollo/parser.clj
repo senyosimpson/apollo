@@ -13,6 +13,7 @@
            (inc iteration)
            (rest instruments)))))
 
+
 (def instrument-names (get-instrument-list))
 
 
@@ -37,13 +38,7 @@
              (rest notes)))))
 
 
-(def note-offsets-map (note-offsets ["c" "c#" "d" "d#" "e" "f"
-                                     "f#" "g" "g#" "a" "a#" "b"]))
-
-
-(defn split-score-notes [apl]
-  "Splits an apl file into score and the musical score"
-  (str/split (slurp apl) #"\n"))
+(def note-offsets-map (note-offsets ["c" "c#" "d" "d#" "e" "f" "f#" "g" "g#" "a" "a#" "b"]))
 
 
 (defn get-score-info [score]
@@ -72,12 +67,6 @@
         (Integer/parseInt (str (last octave))))))
 
 
-; (defn convert-score-to-midi [meta score]
-;   "Convert a musical score into the relevant midi notes"
-;   (map (partial note-to-midi (get-score-octave meta) note-offsets-map)
-;        (str/split score #" ")))
-
-
 (defn to-midi [note octave]
   "
   Converts a string representation of a note to a midi number.
@@ -87,7 +76,6 @@
     octave - the octaves the note is in (e.g 4)
     note - the note in string representation to convert
   "
-
   (+ (get-octave-base-note octave) (get note-offsets-map note)))
 
 
@@ -130,6 +118,9 @@
       :octave 4
       :notes (note-repr)
     }
+
+  Arguments:
+    score - the musical score and score information (in its string representation)
   "
   (let [score-info (get-score-info score)
         instrument (get-instrument-name score-info)
@@ -139,3 +130,12 @@
      :instrument-number (get-instrument-number instrument)
      :octave octave
      :notes (get-note-data notes octave)}))
+
+(defn score-repr-from-file [apl]
+  "
+  Reads a file and builds the internal representation of a score.
+
+  Arguments:
+    apl - the file path to the .apl file
+  "
+  (for [score (str/split (slurp apl) #"\n\n")] (build-score-repr score)))
