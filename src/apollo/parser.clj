@@ -129,10 +129,11 @@
     {:instrument instrument
      :instrument-number (get-instrument-number instrument)
      :octave octave
+     :channel channel
      :notes (to-apl-notes notes octave channel)}))
 
 
-(defn apl-score-from-file [file]
+(defn apl-scores-from-file [file]
   "
   Reads a file and builds the internal apollo representation of a score.
 
