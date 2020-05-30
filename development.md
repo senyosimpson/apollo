@@ -78,3 +78,7 @@ The next steps are to have an offset key so that each note has a position relati
 ### Update - 30/05/2020
 
 I have implemented durations with notes. This follows Alda syntax - notes that have durations are specified as {note}{duration} e.g c4. In this world so far, the duration is specified in quarter notes. 1 is equivalent to 1 quarter note, 2 is two quarter notes, 4 is four quarter notes and so forth. Similarly to Alda, when a note is changed, the duration remains for consecutive notes until changed again.
+
+## Testing - 30/05/2020
+
+I am happy with the current state of the project. Before I go further to develop more features, I'm going to spend time writing tests and writing docstrings. I haven't written tests in Clojure before so this should be fun! It is also my first time doing it with a functional programming language. I expect it to be much easier given the focus on purity and composability.
