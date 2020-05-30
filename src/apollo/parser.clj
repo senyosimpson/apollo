@@ -171,14 +171,16 @@
      :notes (to-apl-notes notes octave channel)}))
 
 
-(defn apl-scores-from-file [file]
+(defn apl-score-from-file [file]
   "
-  Reads a file and builds the internal apollo representation of a score.
+  Reads a file and builds the internal apollo representation of a score. Since
+  there may be more than one musical instrument, we name each instruments
+  and its notes a subscore.
 
   Arguments:
     file - the file path to the .apl file
   "
-  (let [scores (str/split (slurp file) #"\n\n")
-        channels (range (count scores))]
-    (for [[score channel] (partition 2 (interleave scores channels))]
-      (to-apl-score score channel))))
+  (let [subscores (str/split (slurp file) #"\n\n")
+        channels (range (count subscores))]
+    (for [[subscore channel] (partition 2 (interleave subscores channels))]
+      (to-apl-score subscore channel))))

@@ -3,12 +3,12 @@
             [clojure.string :as str]
             [apollo.midi :refer [play]]
             [apollo.utils :refer [sanitize]]
-            [apollo.parser :refer [apl-scores-from-file]]))
+            [apollo.parser :refer [apl-score-from-file]]))
 
 (def cli-options
-  [[nil "--roll" "The notes to play"
-   :required "Path to piano roll"]])
+  [[nil "--score" "The musical score"
+   :required "Path to the musical score to play"]])
 
 (defn -main [& args]
-  (let [roll (:roll (:options (parse-opts args cli-options)))]
-    (play (apl-scores-from-file roll))))
+  (let [score (:score (:options (parse-opts args cli-options)))]
+    (play (apl-score-from-file score))))
