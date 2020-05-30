@@ -67,10 +67,14 @@ Outside of that, I'd like to make program changes part of the midi sequence. Fin
 Managed to get it working! Internal representation works nicely and I got the program change to occur at the start of the midi sequence. I still need to remove the hardcoded values but I'll worry about that later.
 
 
-## Notes: Improvement - 30/05/2020
+## Improvement: Performance - 30/05/2020
 
 I've realised this implementation isn't performant at all. When the code is executed, my machine's fans start going off - clearly means something inefficient is happening somewhere (no surprise). I should definitely investigate this further down the line.
 
 ## Offsets & Duration - 30/05/2020
 
 The next steps are to have an offset key so that each note has a position relative to the start of the midi track. This will allow me to remove the hardcoded tick start positions and durations.
+
+### Update - 30/05/2020
+
+I have implemented durations with notes. This follows Alda syntax - notes that have durations are specified as {note}{duration} e.g c4. In this world so far, the duration is specified in quarter notes. 1 is equivalent to 1 quarter note, 2 is two quarter notes, 4 is four quarter notes and so forth. Similarly to Alda, when a note is changed, the duration remains for consecutive notes until changed again.

@@ -31,19 +31,10 @@
   (.add track (create-program-change-event channel instrument-num)))
 
 
-(defn add-note [track note channel volume tick]
+(defn add-note [track note channel volume position duration]
   (do
-    (.add track (create-note-on-event note channel volume tick))
-    (.add track (create-note-off-event note channel volume (+ 2 tick)))))
-
-
-(defn set-instrument-channel [synth instrument-num channel-num]
-  "Sets a channel to the specified instrument"
-  (let [channel (aget (.getChannels synth) channel-num)
-        instrument (aget (.getAvailableInstruments synth) instrument-num)]
-    (println (str "Setting instrument " (.getName instrument) " on channel " channel-num))
-    (.loadInstrument synth instrument)
-    (.programChange channel instrument-num)))
+    (.add track (create-note-on-event note channel volume position))
+    (.add track (create-note-off-event note channel volume (+ position duration)))))
 
 
 (defn populate-track [track apl-score]
@@ -55,7 +46,7 @@
         notes (:notes apl-score)]
     (add-program-change track channel instrument-num)
     (doseq [[note tick] (map list notes (take (count notes) (iterate (partial + 2) 4)))]
-      (add-note track (:midi-note note) channel (:volume note) tick))))
+      (add-note track (:midi-note note) channel (:volume note) (:offset note) (:duration note)))))
 
 
 (defn set-sequence [sequencer apl-scores]

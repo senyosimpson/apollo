@@ -79,6 +79,37 @@
   (+ (get-octave-base-note octave) (get note-offsets-map note)))
 
 
+(defn get-note-duration
+  "
+  Gets the duration of a note. This is specified on the note string representation. 
+  For example, c4 has a duration of 4 quarter notes. If no duration is attached to the note,
+  either a default duration of 1 tick is returned otherwise nil"
+  ([note use-default]
+    (let [note (str (first note))
+          duration (str (last note))]
+      (if (= note duration)
+        (if use-default 1 nil)
+        (Integer/parseInt duration))))
+  ([note]
+    (get-note-duration note false)))
+
+
+(defn get-note-letter [note]
+  "
+  Gets the letter of the note. This is necessary as notes can be specified with a duration.
+  An example note is c4 which is the note c for 4 quarter notes. This function returns the letter of
+  this note i.e c
+  "
+  (str (first note)))
+
+
+; this needs a name change to something more descriptive
+(defn get-valid-duration [global-duration note-duration]
+  (if (nil? note-duration)
+    global-duration
+    note-duration))
+
+
 (defn to-apl-notes [notes octave channel]
   "
   Converts notes to the apollo note representation. This is the core structure
@@ -89,7 +120,7 @@
       :midi-note 60
       :volume 60
       :channel 0
-      :duration 300
+      :duration 2
     }
 
   Arguments:
@@ -97,15 +128,22 @@
     octave - the octave the notes are in (i.e 4)
   "
   (loop [apl-notes []
-         notes notes]
+         notes notes
+         offset 4
+         global-duration (get-note-duration (first notes) true)]
     (if (empty? notes)
       apl-notes
-      (recur (conj apl-notes {:note (first notes)
-                              :midi-note (to-midi (first notes) octave)
-                              :volume 60
-                              :channel channel
-                              :duration 2})
-             (rest notes)))))
+      (let [note (get-note-letter (first notes))
+            duration (get-valid-duration global-duration (get-note-duration notes))]
+        (recur (conj apl-notes {:note note
+                                :midi-note (to-midi note octave)
+                                :volume 60
+                                :offset offset
+                                :channel channel
+                                :duration duration})
+                (rest notes)
+                (+ offset duration)
+                duration)))))
 
 
 (defn to-apl-score [score channel]
