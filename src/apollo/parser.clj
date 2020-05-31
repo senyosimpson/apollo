@@ -21,8 +21,8 @@
   (get instrument-names (sanitize instrument)))
 
 
-(defn get-instrument-name [meta]
-  (subs meta 0 (str/index-of meta ":")))
+(defn get-instrument-name [score-info]
+  (subs score-info 0 (str/index-of score-info ":")))
 
 
 (defn note-offsets [notes]
@@ -46,7 +46,7 @@
   (first (str/split score #"\n")))
 
 
-(defn get-notes [score]
+(defn get-score-notes [score]
   "Get the notes from the score"
   (last (str/split score #"\n")))
 
@@ -59,15 +59,15 @@
     (get-octave-base-note 4)))
 
 
-(defn get-score-octave [score]
+(defn get-score-octave [score-info]
   "Get the octave of the musical score"
-  (let [octave (subs score (str/index-of score ":"))]
+  (let [octave (subs score-info (str/index-of score-info ":"))]
     (if (= ":" octave)
         4
         (Integer/parseInt (str (last octave))))))
 
 
-(defn to-midi [note octave]
+(defn to-midi-note [note octave]
   "
   Converts a string representation of a note to a midi number.
   For example, middle c -> 60
@@ -79,21 +79,6 @@
   (+ (get-octave-base-note octave) (get note-offsets-map note)))
 
 
-(defn get-note-duration
-  "
-  Gets the duration of a note. This is specified on the note string representation. 
-  For example, c4 has a duration of 4 quarter notes. If no duration is attached to the note,
-  either a default duration of 1 tick is returned otherwise nil"
-  ([note use-default]
-    (let [note (str (first note))
-          duration (str (last note))]
-      (if (= note duration)
-        (if use-default 1 nil)
-        (Integer/parseInt duration))))
-  ([note]
-    (get-note-duration note false)))
-
-
 (defn get-note-letter [note]
   "
   Gets the letter of the note. This is necessary as notes can be specified with a duration.
@@ -101,6 +86,21 @@
   this note i.e c
   "
   (str (first note)))
+
+
+(defn get-note-duration
+  "
+  Gets the duration of a note. This is specified on the note string representation. 
+  For example, c4 has a duration of 4 quarter notes. If no duration is attached to the note,
+  either a default duration of 1 tick is returned otherwise nil"
+  ([note use-default]
+    (let [note-letter (get-note-letter note)
+          duration (str (last note))]
+      (if (= note-letter duration)
+        (if use-default 1 nil)
+        (Integer/parseInt duration))))
+  ([note]
+    (get-note-duration note false)))
 
 
 ; this needs a name change to something more descriptive
@@ -136,7 +136,7 @@
       (let [note (get-note-letter (first notes))
             duration (get-valid-duration global-duration (get-note-duration notes))]
         (recur (conj apl-notes {:note note
-                                :midi-note (to-midi note octave)
+                                :midi-note (to-midi-note note octave)
                                 :volume 60
                                 :offset offset
                                 :channel channel
@@ -163,7 +163,7 @@
   (let [score-info (get-score-info score)
         instrument (get-instrument-name score-info)
         octave (get-score-octave score-info)
-        notes (str/split (get-notes score) #" ")]
+        notes (str/split (get-score-notes score) #" ")]
     {:instrument instrument
      :instrument-number (get-instrument-number instrument)
      :octave octave
