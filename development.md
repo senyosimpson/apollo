@@ -82,3 +82,29 @@ I have implemented durations with notes. This follows Alda syntax - notes that h
 ## Testing - 30/05/2020
 
 I am happy with the current state of the project. Before I go further to develop more features, I'm going to spend time writing tests and writing docstrings. I haven't written tests in Clojure before so this should be fun! It is also my first time doing it with a functional programming language. I expect it to be much easier given the focus on purity and composability.
+
+## GitHub Actions
+
+Decided to add github actions for continuous integration. At the moment, I'm using the standard Clojure template. I need to learn what `lein deps` is used for as it is in the workflow. Just as an observation, the structure and syntax is almost exactly the same as CircleCI which is just interesting.
+
+```yaml
+name: Clojure CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install dependencies
+      run: lein deps
+    - name: Run tests
+      run: lein test
+```
