@@ -3,7 +3,13 @@
             [apollo.utils :refer [sanitize]]))
 
 
-(defn get-instrument-list []
+(defn get-instruments []
+  "
+  Gets a map of all the available instruments with their corrresponding
+  instrument numbers
+  
+  {acoustic-grand-piano 0 bright-acoustic-piano 1 ...}
+  "
   (loop [mapping {}
          iteration 0
          instruments (str/split (slurp "instruments.txt") #"\n")]
@@ -14,20 +20,38 @@
            (rest instruments)))))
 
 
-(def instrument-names (get-instrument-list))
+(def instruments (get-instruments))
 
 
 (defn get-instrument-number [instrument]
-  (get instrument-names (sanitize instrument)))
+  "
+  Gets the relevant instrument number
+  
+  Arguments:
+    instrument - the name of the instrument
+  "
+  (get instruments (sanitize instrument)))
 
 
-(defn get-instrument-name [meta]
-  (subs meta 0 (str/index-of meta ":")))
+(defn get-instrument-name [score-metadata]
+  "
+  Get the instrument name from the score metadata
+  
+  Arguments:
+    score-metadata - the score metadata
+  "
+  (subs score-metadata 0 (str/index-of score-metadata ":")))
 
 
-(defn note-offsets [notes]
-  "Gets the offsets of a note from a base note. i.e D has an offset of 2 relative to C.
-  Returns a mapping from note to offset e.g {C 0, C# 1, D 2, D# 3}"
+(defn get-note-offsets [notes]
+  "
+  Gets the offsets of a note from a base note. i.e D has
+  an offset of 2 relative to C. Returns a mapping from note
+  to offset e.g {C 0, C# 1, D 2, D# 3}
+  
+  Arguments:
+    notes - a list/vector of the names of the notes (i.e [c d e f])
+  "
   (loop [mapping {}
          iteration 0
          notes notes]
@@ -38,21 +62,38 @@
              (rest notes)))))
 
 
-(def note-offsets-map (note-offsets ["c" "c#" "d" "d#" "e" "f" "f#" "g" "g#" "a" "a#" "b"]))
+(def note-offsets (get-note-offsets ["c" "c#" "d" "d#" "e" "f" "f#" "g" "g#" "a" "a#" "b"]))
 
 
-(defn get-score-info [score]
-  "Get the high level score information from the score"
+(defn get-score-metadata [score]
+  "
+  Get the score metadata from the score. This is usually
+  the instrument name and octave
+  
+  Arguments:
+    score - the score in its string representation
+  "
   (first (str/split score #"\n")))
 
 
 (defn get-notes [score]
-  "Get the notes from the score"
+  "
+  Get the notes from the score
+  
+  Arguments:
+    score - the score in its string representation
+  "
   (last (str/split score #"\n")))
 
 
 (defn get-octave-base-note
-  "Gets the first midi note number for an octave"
+  "
+  Gets the first midi note number for an octave
+  
+  Arguments:
+    octave - the relevant octave (usually a number between
+      1 - 7)
+  "
   ([octave]
     (+ 24 (* 12 (- octave 1))))
   ([]
@@ -60,7 +101,12 @@
 
 
 (defn get-score-octave [score]
-  "Get the octave of the musical score"
+  "
+  Get the octave of the musical score
+  
+  Arguments:
+    score - the score in its string representation
+  "
   (let [octave (subs score (str/index-of score ":"))]
     (if (= ":" octave)
         4
@@ -76,14 +122,20 @@
     octave - the octaves the note is in (e.g 4)
     note - the note in string representation to convert
   "
-  (+ (get-octave-base-note octave) (get note-offsets-map note)))
+  (+ (get-octave-base-note octave) (get note-offsets note)))
 
 
 (defn get-note-duration
   "
-  Gets the duration of a note. This is specified on the note string representation. 
-  For example, c4 has a duration of 4 quarter notes. If no duration is attached to the note,
-  either a default duration of 1 tick is returned otherwise nil"
+  Gets the duration of a note. This is specified on the note
+  string representation. For example, c4 has a duration of 4
+  quarter notes. If no duration is attached to the note, either
+  a default duration of 1 tick is returned otherwise nil
+  
+  Arguments:
+    note - the note in its string representation
+    use-default - if set, returns a default of 1 otherwise returns nil
+  "
   ([note use-default]
     (let [note (str (first note))
           duration (str (last note))]
@@ -96,15 +148,31 @@
 
 (defn get-note-letter [note]
   "
-  Gets the letter of the note. This is necessary as notes can be specified with a duration.
-  An example note is c4 which is the note c for 4 quarter notes. This function returns the letter of
-  this note i.e c
+  Gets the letter of the note. This is necessary as notes can
+  be specified with a duration. An example note is c4 which is
+  the note c for 4 quarter notes. This function returns the letter
+  of this note i.e c
+
+  Arguments:
+    note: the note in its string representation
   "
   (str (first note)))
 
 
 ; this needs a name change to something more descriptive
 (defn get-valid-duration [global-duration note-duration]
+  "
+  This is a utility function for building the apollo representation
+  of the score. If a note has no duration specified, it will default
+  to the last specified duration. i.e if we have notes [c4, d, e, f2, g],
+  d and e should have a duration of 4 while g will have a duration of 2.
+  This function returns the relevant duration depending on whether the
+  note duration is set.
+  
+  Arguments:
+    global-duration - the last specified duration
+    note-duration - the duration of the current note
+  "
   (if (nil? note-duration)
     global-duration
     note-duration))
@@ -116,7 +184,7 @@
   that defines the data needed for a note to be played by the sound engine. It is a 
   hash map with the data:
     {
-      :note \"c\"
+      :note c
       :midi-note 60
       :volume 60
       :channel 0
@@ -126,6 +194,7 @@
   Arguments:
     notes - a list of notes
     octave - the octave the notes are in (i.e 4)
+    channel - the midi channel
   "
   (loop [apl-notes []
          notes notes
@@ -151,7 +220,7 @@
   Builds the internal apollo representation of a score. This is the main structure used
   by the audio engine. This is a hash map with the data:
     {
-      :instrument acoustic grand piano
+      :instrument Acoustic Grand Piano
       :instrument-number 0
       :octave 4
       :notes <apl-notes>
@@ -159,6 +228,7 @@
 
   Arguments:
     score - the musical score and score information (in its string representation)
+    channel - the midi channel
   "
   (let [score-info (get-score-info score)
         instrument (get-instrument-name score-info)
@@ -174,7 +244,7 @@
 (defn apl-score-from-file [file]
   "
   Reads a file and builds the internal apollo representation of a score. Since
-  there may be more than one musical instrument, we name each instruments
+  there may be more than one musical instrument, we name each instrument
   and its notes a subscore.
 
   Arguments:

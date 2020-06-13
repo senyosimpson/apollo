@@ -2,17 +2,27 @@
   (:require [clojure.string :as str]))
 
 
-(defn basename [string]
-  "Gets the basename of an instrument name
-   e.g Bass 4 (Lead + Pad) -> bass4"
-  (let [index (str/index-of string "(")]
+(defn basename [name]
+  "
+  Gets the basename of an instrument name
+  e.g Bass 4 (Lead + Pad) -> bass4
+  
+  Arguments:
+    name - the instrument name"
+  (let [index (str/index-of name "(")]
     (if (nil? index)
-      string
-      (str/trim (subs string 0 index)))))
+      name
+      (str/trim (subs name 0 index)))))
 
 
-(defn sanitize [string]
-  "Sanitize the name of the instrument"
+(defn sanitize [name]
+  "
+  Sanitize the name of the instrument. This performs the
+  following transformation, Acoustic Grand Piano -> acoustic-grand-piano
+
+  Arguments:
+    name - the instrument name
+  "
   ((comp
     #(.toLowerCase %)
     #(str/replace % #" " "-")
