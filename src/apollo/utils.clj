@@ -27,4 +27,4 @@
     #(.toLowerCase %)
     #(str/replace % #" " "-")
     basename)
-   string))
+   name))
