@@ -113,7 +113,7 @@
         (Integer/parseInt (str (last octave))))))
 
 
-(defn to-midi [note octave]
+(defn to-midi-note [note octave]
   "
   Converts a string representation of a note to a midi number.
   For example, middle c -> 60
@@ -123,6 +123,15 @@
     note - the note in string representation to convert
   "
   (+ (get-octave-base-note octave) (get note-offsets note)))
+
+
+(defn get-note-letter [note]
+  "
+  Gets the letter of the note. This is necessary as notes can be specified with a duration.
+  An example note is c4 which is the note c for 4 quarter notes. This function returns the letter of
+  this note i.e c
+  "
+  (str (first note)))
 
 
 (defn get-note-duration
@@ -137,9 +146,9 @@
     use-default - if set, returns a default of 1 otherwise returns nil
   "
   ([note use-default]
-    (let [note (str (first note))
+    (let [note-letter (get-note-letter note)
           duration (str (last note))]
-      (if (= note duration)
+      (if (= note-letter duration)
         (if use-default 1 nil)
         (Integer/parseInt duration))))
   ([note]
@@ -205,7 +214,7 @@
       (let [note (get-note-letter (first notes))
             duration (get-valid-duration global-duration (get-note-duration notes))]
         (recur (conj apl-notes {:note note
-                                :midi-note (to-midi note octave)
+                                :midi-note (to-midi-note note octave)
                                 :volume 60
                                 :offset offset
                                 :channel channel
@@ -233,7 +242,7 @@
   (let [score-info (get-score-info score)
         instrument (get-instrument-name score-info)
         octave (get-score-octave score-info)
-        notes (str/split (get-notes score) #" ")]
+        notes (str/split (get-score-notes score) #" ")]
     {:instrument instrument
      :instrument-number (get-instrument-number instrument)
      :octave octave
