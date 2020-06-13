@@ -13,21 +13,21 @@
 
 
 (deftest note-offsets-test
-  (let [note-offsets-map (note-offsets ["c" "c#" "d"])
+  (let [note-offsets (get-note-offsets ["c" "c#" "d"])
         correct {"c" 0 "c#" 1 "d" 2}
         incorrect {"c" 0 "c#" 2 "d" 1}]
-  (is (= note-offsets-map correct))
-  (is (not= note-offsets-map incorrect))))
+  (is (= note-offsets correct))
+  (is (not= note-offsets incorrect))))
 
 
 ; should use a fixture here
-(deftest get-score-info-test
+(deftest get-score-metadata-test
   (let [score (slurp "test/apollo/testscore.apl")]
-    (is (= (get-score-info score) "Acoustic Grand Piano: o4"))))
+    (is (= (get-score-metadata score) "Acoustic Grand Piano: o4"))))
 
 
 ; should use a fixture here
-(deftest get-score-info-test
+(deftest get-score-notes-test
   (let [score (slurp "test/apollo/testscore.apl")]
     (is (= (get-score-notes score) "c d e f g a b c c b a g f e d c"))))
 
@@ -38,7 +38,7 @@
 
 
 (deftest get-score-octave-test
-  (let [score-info (get-score-info (slurp "test/apollo/testscore.apl"))]
+  (let [score-info (get-score-metadata (slurp "test/apollo/testscore.apl"))]
     (is (= (get-score-octave score-info) 4))))
 
 

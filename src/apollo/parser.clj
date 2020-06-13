@@ -76,7 +76,7 @@
   (first (str/split score #"\n")))
 
 
-(defn get-notes [score]
+(defn get-score-notes [score]
   "
   Get the notes from the score
   
@@ -239,7 +239,7 @@
     score - the musical score and score information (in its string representation)
     channel - the midi channel
   "
-  (let [score-info (get-score-info score)
+  (let [score-info (get-score-metadata score)
         instrument (get-instrument-name score-info)
         octave (get-score-octave score-info)
         notes (str/split (get-score-notes score) #" ")]
