@@ -100,7 +100,7 @@
         instrument-num (:instrument-number apl-score)
         notes (:notes apl-score)]
     (add-program-change track channel instrument-num)
-    (doseq [[note tick] (map list notes (take (count notes) (iterate (partial + 2) 4)))]
+    (doseq [note notes]
       (add-note track (:midi-note note) channel (:volume note) (:offset note) (:duration note)))))
 
 
