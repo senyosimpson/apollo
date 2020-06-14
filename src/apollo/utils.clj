@@ -16,3 +16,7 @@
     #(str/replace % #"\)" "")
     #(str/replace % #" " "-"))
    name))
+
+
+(defn is-digit [string]
+  (not (nil? (re-matches #"\d" string))))

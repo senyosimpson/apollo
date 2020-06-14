@@ -72,7 +72,8 @@
 
 (defn add-note [track note channel volume tick duration]
   "
-  Adds a note event to the track
+  Adds a note event to the track. If a chord is passed in, will add all
+  the notes at the same position
   
   Arguments:
     track - the track to add the midi note message to
@@ -82,8 +83,9 @@
     tick - the position of the note
     duration - the length of the note specified in ticks
   "
-  (.add track (create-note-on-event note channel volume tick))
-  (.add track (create-note-off-event note channel volume (+ tick duration))))
+  (doseq [n note]
+    (.add track (create-note-on-event n channel volume tick))
+    (.add track (create-note-off-event n channel volume (+ tick duration)))))
 
 
 (defn populate-track [track apl-score]

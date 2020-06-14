@@ -1,6 +1,6 @@
 (ns apollo.parser
   (:require [clojure.string :as str]
-            [apollo.utils :refer [sanitize]]))
+            [apollo.utils :refer [sanitize, is-digit]]))
 
 
 (defn get-instruments []
@@ -116,22 +116,31 @@
 (defn to-midi-note [note octave]
   "
   Converts a string representation of a note to a midi number.
-  For example, middle c -> 60
+  For example, c in the 4th octave is converted to 60. If a chord
+  is passed in, builds a vector that contains the midi numbers of
+  those notes.
 
   Arguments:
-    octave - the octaves the note is in (e.g 4)
+    octave - the octave the note is in (e.g 4)
     note - the note in string representation to convert
   "
-  (+ (get-octave-base-note octave) (get note-offsets note)))
+  (for [note (map str (vec note))]
+    (+ (get-octave-base-note octave) (get note-offsets note))))
 
 
 (defn get-note-letter [note]
   "
-  Gets the letter of the note. This is necessary as notes can be specified with a duration.
-  An example note is c4 which is the note c for 4 quarter notes. This function returns the letter of
-  this note i.e c
+  Gets the letter of the note. This is necessary as notes can
+  be specified with a duration. An example note is c4 which is
+  the note c for 4 quarter notes. This function returns the letter
+  of this note i.e c
+
+  Arguments:
+    note - the note in its string representation
   "
-  (str (first note)))
+  (if (is-digit (str (last note)))
+    (apply str (butlast note))
+    note))
 
 
 (defn get-note-duration
@@ -146,26 +155,12 @@
     use-default - if set, returns a default of 1 otherwise returns nil
   "
   ([note use-default]
-    (let [note-letter (get-note-letter note)
-          duration (str (last note))]
-      (if (= note-letter duration)
-        (if use-default 1 nil)
-        (Integer/parseInt duration))))
+    (let [note-duration (str (last note))]
+      (if (is-digit note-duration)
+        (Integer/parseInt note-duration)
+        (if use-default 1 nil))))
   ([note]
     (get-note-duration note false)))
-
-
-(defn get-note-letter [note]
-  "
-  Gets the letter of the note. This is necessary as notes can
-  be specified with a duration. An example note is c4 which is
-  the note c for 4 quarter notes. This function returns the letter
-  of this note i.e c
-
-  Arguments:
-    note: the note in its string representation
-  "
-  (str (first note)))
 
 
 ; this needs a name change to something more descriptive
@@ -194,7 +189,7 @@
   hash map with the data:
     {
       :note c
-      :midi-note 60
+      :midi-note '(60)
       :volume 60
       :channel 0
       :duration 2
@@ -212,7 +207,7 @@
     (if (empty? notes)
       apl-notes
       (let [note (get-note-letter (first notes))
-            duration (get-valid-duration global-duration (get-note-duration notes))]
+            duration (get-valid-duration global-duration (get-note-duration (first notes)))]
         (recur (conj apl-notes {:note note
                                 :midi-note (to-midi-note note octave)
                                 :volume 60
