@@ -108,3 +108,16 @@ jobs:
     - name: Run tests
       run: lein test
 ```
+
+
+## Update - 14/06/2020
+
+I have finished writing docstrings for the code. I have added tests to all code barring `midi.clj`. I still need to figure out a testing methodology there due to it being all side-effect code that uses Java objects. I have not been comprehensive with testing and therefore need to improve the testing suite - mainly testing for edge cases. I will do this at a later stage. Some other things I need to implement are logging and error handling.
+
+## Chords - 14/06/2020
+
+The next feature I'm planning on adding are chords.
+
+### Update - 14/06/2020
+
+Completed adding chords. These are specified by the notes without any spaces between them. For example, c major chord is written as `ceg`. A chord can also have a duration by adding it at the end - `ceg4`. This style could possibly be improved but it is fine for now.
