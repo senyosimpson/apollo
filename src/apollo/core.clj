@@ -1,8 +1,6 @@
 (ns apollo.core
   (:require [clojure.tools.cli :refer [parse-opts]]
-            [clojure.string :as str]
             [apollo.midi :refer [play]]
-            [apollo.utils :refer [sanitize]]
             [apollo.parser :refer [apl-score-from-file]]))
 
 (def cli-options

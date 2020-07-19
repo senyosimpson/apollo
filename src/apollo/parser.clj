@@ -117,12 +117,12 @@
   "
   Converts a string representation of a note to a midi number.
   For example, c in the 4th octave is converted to 60. If a chord
-  is passed in, builds a vector that contains the midi numbers of
+  is passed in, builds a list that contains the midi numbers of
   those notes.
 
   Arguments:
     octave - the octave the note is in (e.g 4)
-    note - the note in string representation to convert
+    note - the note to convert in string representation
   "
   (for [note (map str (vec note))]
     (+ (get-octave-base-note octave) (get note-offsets note))))
@@ -133,7 +133,8 @@
   Gets the letter of the note. This is necessary as notes can
   be specified with a duration. An example note is c4 which is
   the note c for 4 quarter notes. This function returns the letter
-  of this note i.e c
+  of this note i.e c. If a chord is passed in, it gets the relevant
+  letters e.g ceg4 is returned as ceg.
 
   Arguments:
     note - the note in its string representation
@@ -145,7 +146,7 @@
 
 (defn get-note-duration
   "
-  Gets the duration of a note. This is specified on the note
+  Gets the duration of a note. This is specified in the note's
   string representation. For example, c4 has a duration of 4
   quarter notes. If no duration is attached to the note, either
   a default duration of 1 tick is returned otherwise nil
@@ -185,7 +186,7 @@
 (defn to-apl-notes [notes octave channel]
   "
   Converts notes to the apollo note representation. This is the core structure
-  that defines the data needed for a note to be played by the sound engine. It is a 
+  that defines the data needed for a note to be played by the audio engine. It is a 
   hash map with the data:
     {
       :note c
