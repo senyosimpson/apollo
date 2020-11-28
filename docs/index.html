@@ -55,6 +55,33 @@
     </audio>
 </figure>
 <h2 id="apollo-deep-dive">Apollo deep dive</h2>
+<p>Apollo reads .apl files (they extension is practically useless at this point in time), parses it, builds a midi track and then plays the notes. All the midi heavy lifting is done in Java with Clojure interoperating with it to use it. An .apl file has the general format</p>
+<pre><code>instrument: octave
+notes
+
+instrument: octave
+notes
+
+...
+</code></pre><p><code>instrument</code> is the instrument name. All the available instruments are defined in the file <code>instruments.txt</code>. <code>octave</code> denotes the octave within to play. It is specified as <code>o&lt;number&gt;</code> (e.g <code>o4</code> which will play in the 4th octave). The notes are the letters to play. Multiple instruments can be used by repeating the pattern over again. They do not have to play the same notes, allowing one to get creative with music composition. An example of the C major scale defined in .apl format</p>
+<pre><code>Acoustic Grand Piano: o4
+c d e f g a b c
+</code></pre><p>The audio clip of twinkle twinkle little star is defined as</p>
+<pre><code>Acoustic Grand Piano: o4
+c c g g a a g2 f1 f e e d d c2 g1 g f f e e d2 g1 g f f e e d2 c1 c g g a a g2 f1 f e e d d c2
+</code></pre><h3 id="notes">Notes</h3>
+<p>To increase the expressivity, notes can be played together and/or have different durations. To play more than one note at a time, they can be written as one &ldquo;word&rdquo;. For example to play the C major chord</p>
+<pre><code>ceg
+</code></pre><p>As stated, notes can also have varying durations. This is specified by appending a duration at the end of the note. To play the C major chord for a semibreve (4 beats)</p>
+<pre><code>ceg4
+</code></pre><p>Similarly, for a minim we would change <code>4</code> to <code>2</code>. You get the point 🤫.</p>
+<p>When creating a composition, durations only change when they are specified. The default is set to a crotchet (1 beat) and will remain at one 1 beat until a new duration specified. Similarly, the new duration will continue playing until a new duration is specified. For example, say we have the C major composition</p>
+<pre><code>c d e f g a b c
+</code></pre><p>This will play each note for 1 beat. We can modify it as such</p>
+<pre><code>c d e f2 g a b c
+</code></pre><p>which will play <code>c d e</code> for 1 beat and <code>f g a b c</code> each for 2 beats, because we did not change the duration again. If we had</p>
+<pre><code>c d e f2 g a4 b1 c
+</code></pre><p>we would get <code>c d e</code> for 1 beat, <code>f g</code> for 2 beats, <code>a</code> for 4 beats and <code>b c</code> for 1 beat.</p>
 
       </section>
       
