@@ -7,7 +7,7 @@ publishdir = "../"
 [params]
     brand = "Apollo"
     description = "A music programming language built in Clojure"
-    bgimg = "ignasi_pattern_s.png"
+    bgimg = "/images/ignasi_pattern_s.png"
 
 [markup]
   [markup.highlight]
