@@ -1,3 +1,3 @@
 [submodule "docs/blog/themes/aether"]
 	path = docs/blog/themes/aether
-	url = git@github.com:senyosimpson/aether.git
+	url = https://github.com/senyosimpson/aether.git
